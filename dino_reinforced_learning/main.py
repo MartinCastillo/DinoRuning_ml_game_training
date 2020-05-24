@@ -1,29 +1,27 @@
 #Este archivo incluye lo referente a ´juntarlo todo',realizar el aprendizaje en si
-##CUIDADO CON QUE LOS OBJETOS NO SE SALGAN DE LOS MARGENES DE LA IMAGEN
-
+"""Todo este desastre se resume en un modelo evolutivo, en alguna parte hay una función training(p,visible)
+esta toma cierta matriz y un boleano que determina si se muestra en pantalla o no el juego, la matriz determina
+si va o no a saltar con cierta matriz de obstaculo, la funciòn retorna el puntaje que obtinie la matriz luego de
+un juego sorry si hay demasiados comentarois, pero son para mi, que quizà olvide como funciona esto."""
 #Imports
 import cv2
 import numpy as np
-from time import sleep
 from random import randint,uniform
-import csv ; import os
-from clint.textui import colored #Para ponerle colores a las salidas
-
 #Local imports
-from guardar_cargar_datos import guardar_datos_csv,cargar_datos_csv
-from class_Pantalla import Pantalla
-from class_Game import Game
+from class_Game.class_Game import Game
+visible = True
+"""FORMATO DE ELEMENTO DE POBLACIÒN, UNA MATRIZ CON
+CARACTERÌSTICAS ESPECÌFICAS"""
+t_poblacion = 20
+probabilidad_mutacion = 10#Percent
+min_puntaje = 100#Puntaje mínimo
+porcion_restante = 0.4
 
-"""FORMATO DE ELEMENTO DE POBLACIÖN UNA MATRIZ CON CARACTERÏSTICAS ESPECÏFICAS"""
-t_poblacion = 50
-probabilidad_mutacion = 3#Percent
-min_puntaje = 1000#Puntaje mínimo
-porcion_restante = 0.1
-
-min_max = [-1,1]
-nn_deep = 1
+min_max = [0,1]
+nn_deep = 0
 freatures = 3
 desviacion_min = 0.05
+
 #Tiene las matrixs de pesos de (nxf) y su puntaje
 def generar_poblacion(_t_poblacion,n):
     """-----------------------"""
@@ -64,16 +62,12 @@ def elimincaion(población,porcion):
 def cruce(p1,p2):
     """-----------------------"""
     #Cruza los 'genes' de los padres, y crea un nuevo elemento, TAMBIÉN DEBE TENER SU PUNTAJE
-    #Puede tomar la mitad de las capas de uno y las otras de otro
-    son = np.ones(p1[0].shape)
-    #El gen dominante se elige aleatoriamente
-    if(randint(0,1)):
-        p1,p2 = p2,p1
-    numero_capas = p1[0].shape[0]
-    son[:][0:numero_capas//2] = p1[0][:][0:numero_capas//2]
-    son[:][numero_capas//2:numero_capas] = p2[0][:][numero_capas//2:numero_capas]
-    #Podría tomar ciertas capas de un padre y las otras del otro
-    return [np.matrix(son),0]
+    #Puede Promediar los elementos homologos de cada uno
+    #Elige la dominancia de uno alazar
+    dom = uniform(0,1)
+    dom = 0.5
+    ret = [(p1[0]*dom + p2[0]*(1-dom)),0]
+    return ret
 
 def mutacion(elemento):
     #Cambia una capa o columna aleatoria de la matriz, por otra aleatorio,independiente
@@ -94,24 +88,22 @@ def get_puntaje_promedio(_poblacion):
     #Hace un promedio de los puntajes en la poblacion
     return(sum( [e[len(e)-1] for e in _poblacion] )//len(_poblacion))
 
-"""---------------------------------------------------------------------------"""
 #Game toma parametros cuando se crea que pueden que pueden ser usados por training,
 #como primeros parametros, si no, se deja vacio
 @Game()
 def training(*args):
     #import pdb; pdb.set_trace()
     #Hacemos la prediccion
-    w = args[0][0]
+    w = args[0][0]#Los pesos correspondientes al modelo actual
+    #Considera que args[1] contiene tres parametros, la altura, ancho y distancia del obstaculo más cercano
     x = np.matrix(args[1]).T
     #Predice una salida boleana, si el valor cumple la condición de ser mayor que 0,
     #salta si no no, ESTO ES VARIABLE Y EXPERIMENTAL, liego retorna el valor al juego
-    prediccion = (w[:,0:freatures]@x).T@w[:,-1])
-    #print(prediccion)
+    prediccion = (w[:,0:freatures]@x)
     #El umbral es 0
-    if prediccion >= 0:
+    if prediccion >= 0.5:
         return 1
     return 0
-
 
 if(__name__=='__main__'):
     iter = 1 ; puntuacion_promedio = 0 ; last_prom_punt = 0
@@ -119,11 +111,6 @@ if(__name__=='__main__'):
     poblacion = generar_poblacion(t_poblacion,nn_deep+1)
     """Empieza entrenamiento"""
     while(puntuacion_promedio < min_puntaje):
-        visible = False
-        if(iter%30==0):
-            visible = True
-        iter += 1
-
         for (ix,p) in enumerate(poblacion):
             """Puntuar"""
             #Tenemos una funcion que hace el juego y que incorpora adentro una de entrenamiento
@@ -131,7 +118,6 @@ if(__name__=='__main__'):
             #ocupamos training que primero pasa por Game, y para orgainzar usamos training para
             #la evaluación dentro del juego
             poblacion[ix][1] = training(p,visible)
-            visible = False
         #Luego de que puntua ordena según puntaje
         poblacion.sort(key = lambda e: e[len(e)-1])
         #Saca puntaje promedio, para ver el avance de la población
@@ -177,7 +163,7 @@ if(__name__=='__main__'):
             else:
                 poblacion.append(mutacion(cruce(padres[0],padres[1])))
 
-        print(colored.white('Promedio, miembros e iteración, p_m {} : {}% / {}/{}'.format(probabilidad_mutacion,(puntuacion_promedio*100)/min_puntaje,len(poblacion),iter)))
+        print('Promedio, miembros e iteración, {} / {} / {}'.format(puntuacion_promedio,len(poblacion),iter))
     #Si consigue la solución
     solucion = poblacion[0]
     training(solucion,False)
