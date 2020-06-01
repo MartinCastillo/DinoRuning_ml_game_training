@@ -6,8 +6,8 @@ from keras.layers import Dense,Activation
 def create_model(n_inputs):
     model = Sequential()
     model.add(Dense(n_inputs,input_shape = (n_inputs,)))
-    model.add(Dense(10,input_shape = (n_inputs,)))
-    model.add(Activation('relu'))
+    model.add(Dense(13,input_shape = (n_inputs,)))
+    model.add(Activation('relu',input_shape=(13,)))
     model.add(Dense(1,input_shape = (1,)))
     model.add(Activation('sigmoid'))
     model.compile(loss='mse',optimizer='adam',metrics=['accuracy'])
@@ -19,16 +19,17 @@ def generate_population(size,n_inputs):
         p.append([None,create_model(n_inputs)])
     return p
 
-def model_crossover(parent1,parent2,gens_to_crossover):
+def model_crossover(parent1,parent2,gens_to_swap):
     model1 = parent1[1]
     model2 = parent2[1]
     weight1 = model1.get_weights()
     weight2 = model2.get_weights()
     new_weight1=weight1
     new_weight2=weight1
-    gene = randint(0,len(new_weight1)-1)
-    new_weight1[gene] = weight2[gene]
-    new_weight2[gene] = weight1[gene]
+    for _ in range(gens_to_swap):
+        gen = randint(0,len(new_weight1)-1)
+        new_weight1[gen] = weight2[gen]
+        new_weight2[gen] = weight1[gen]
     model1.set_weights(new_weight1)
     model2.set_weights(new_weight2)
     parent1[1] = model1
@@ -47,14 +48,14 @@ def model_mutate(individual,mutate_probability,gens_to_mutate):
     individual[1] = model
     return individual
 
-def over_population(population,individuals_to_crossover,gens_to_crossover,gens_to_mutate,mutate_probability):
+def over_population(population,individuals_to_crossover,gens_to_swap,gens_to_mutate,mutate_probability):
     for ix1,p1 in enumerate(population):
         for ix2,p2 in enumerate(population):
             if individuals_to_crossover == 0:
                 return population
             if (ix1 != ix2):
                 individuals_to_crossover -= 1
-                parent1,parent2 = model_crossover(p1,p2,gens_to_crossover)
+                parent1,parent2 = model_crossover(p1,p2,gens_to_swap)
                 parent1 = model_mutate(parent1,mutate_probability,gens_to_mutate)
                 parent2 = model_mutate(parent2,mutate_probability,gens_to_mutate)
                 population[ix1] = parent2
