@@ -1,7 +1,7 @@
 # Dinosaur-IA-training
 A simple game similar to Google's dinosaur, programmed in Python, the plan for this project is to train a machine learning model that has to learn to play, with a genetic model.
 
-idea: https://www.youtube.com/watch?v=sB_IGstiWlc
+Idea: https://www.youtube.com/watch?v=sB_IGstiWlc
 
 # Src
 * | ```/main.py ```: Is the main file, it makes the learning process, using functions from ```/genetic_model.py ```.<br>
