@@ -6,11 +6,13 @@ from keras.layers import Dense,Activation
 def create_model(n_inputs):
     model = Sequential()
     model.add(Dense(n_inputs,input_shape = (n_inputs,)))
-    model.add(Dense(13,input_shape = (n_inputs,)))
-    model.add(Activation('relu',input_shape=(13,)))
-    model.add(Dense(1,input_shape = (1,)))
+    model.add(Activation('relu'))
+    model.add(Dense(12,input_shape = (n_inputs,)))
+    model.add(Activation('relu'))
+    model.add(Dense(1,input_shape = (n_inputs,)))
     model.add(Activation('sigmoid'))
-    model.compile(loss='mse',optimizer='adam',metrics=['accuracy'])
+
+    model.compile(loss='mse',optimizer='adam')
     return model
 
 def generate_population(size,n_inputs):
