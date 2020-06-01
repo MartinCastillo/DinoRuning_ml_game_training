@@ -17,7 +17,7 @@ if(__name__=='__main__'):
     min_score = 30
     generations = 100
     gens_to_mutate = 2
-    population_size = 35
+    population_size = 1
     gens_to_swap = 3
     mutate_probability = 0.01
     individuals_to_crossover = 2
@@ -26,10 +26,11 @@ if(__name__=='__main__'):
     for _ in range(generations):
         if _%10 == 0:
             render = True
-        game.play(population)
-        population = sorted(population,key = lambda x:x[0],reverse=True)
-        print(population[0][0])
-        if(population[0][0] > min_score):
+        #return list with pairs [(model,score),...]
+        population = game.play(population)
+        population = sorted(population,key = lambda x:x[1],reverse=True)
+        print(population[0][1])
+        if(population[0][1] > min_score):
             break
         population = over_population(population,individuals_to_crossover,gens_to_swap,gens_to_mutate,mutate_probability)
     population[0][1].save('model.h5')

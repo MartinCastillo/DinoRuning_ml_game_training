@@ -2,28 +2,35 @@ import numpy as np
 import pygame
 
 class Agent:
-    def __init__(self,size = (80,80),coords=(0,0)):
+    def __init__(self,coords,shape):
         self.coords = np.array(coords)
-        self.size = size
+        self.shape = shape
         self.alive = True
         self.jump_counter = 0
-        self.max_jump_counter = 10
-        self.jump_speed = 3
-        self.sprites = []
+        self.max_jump_counter = 12
+        self.jump_height = 5
+        self.sprites = [
+            pygame.image.load("Game/assets/0.png"),
+            pygame.image.load("Game/assets/1.png"),
+            pygame.image.load("Game/assets/2.png")
+            ]
+        for sx,sprite in enumerate(self.sprites):
+            self.sprites[sx] = pygame.transform.scale(sprite,self.shape)
+            self.sprites[sx].set_colorkey((255,255,255))
+            self.sprites[sx].convert_alpha()
         self.sprite_animation_conunter = 0
-        self.sprite_number = 5
-        self.sprite_speed = 1
-        pass
+        self.sprite_number = 3
+        self.sprite_speed = 2
 
     def render(self,window):
-        #render sprite with rect (*self.coords,*self.size) in window
-        pass
+        window.blit(self.sprites[self.sprite_animation_conunter],self.get_rect())
 
     def get_rect(self):
-        return pygame.Rect(*self.coords,*self.size)
+        return pygame.Rect(*self.coords,*self.shape)
 
     def jump(self):
-        self.jump_counter = self.max_jump_counter
+        if(self.jump_counter==0):
+            self.jump_counter = self.max_jump_counter
 
     def update_jump(self):
         #Check position based on jump counter, with parabolic ecuation
@@ -31,20 +38,27 @@ class Agent:
             neg = 1
             if(self.jump_counter>self.max_jump_counter//2):
                 neg = -1
-            delta = np.array([neg*self.jump_speed**2//3 ,0])
+            delta = np.array([0,neg*self.jump_height**2])
             self.coords += delta
             self.jump_counter -= 1
 
     def update_collision(self,obstacle_list):
-        #List of active or collidable, Obstacle  instances, if hit an obstacle self.alive = False
-        self_rect = self.get_rect()
-        for obstacle in obstacle_list:
-            if self_rect.colliderect(obstacle.get_rect()):
-                self.alive = False
+        #Given a list of  collidable, Obstacle  instances, if hit an obstacle self.alive = False
+        if(len(obstacle_list)>0):
+            self_rect = self.get_rect()
+            for obstacle in obstacle_list:
+                if self_rect.colliderect(obstacle.get_rect()):
+                    self.alive = False
 
-    def update_sprite(self):
-        #self.sprite_animation_conunter betwen 0 and self.sprite_number
-        self.sprite_animation_conunter = (self.sprite_animation_conunter + 1)%self.sprite_number
+    def update_sprite(self,sprite_counter):
+        if (sprite_counter%self.sprite_speed)==0:
+            self.sprite_animation_conunter = (self.sprite_animation_conunter + 1)%self.sprite_number
+
+    def update_agent(self,obstacle_list,sprite_counter):
+        #Update collision a sprite and jump
+        self.update_collision(obstacle_list)
+        self.update_sprite(sprite_counter)
+        self.update_jump()
 
     def is_alive(self):
         return self.alive

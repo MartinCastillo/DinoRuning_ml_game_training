@@ -18,7 +18,7 @@ def create_model(n_inputs):
 def generate_population(size,n_inputs):
     p = []
     for _ in range(size):
-        p.append([None,create_model(n_inputs)])
+        p.append(create_model(n_inputs))
     return p
 
 def model_crossover(parent1,parent2,gens_to_swap):
