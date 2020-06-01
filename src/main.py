@@ -1,16 +1,6 @@
-import numpy as np
-from random import uniform
-#Local imports, Game, usada para puntuar modelos de nn y genetic_model con el modelo genetico en si
+#Game, usada para puntuar modelos de nn y genetic_model con el modelo genetico en si
 from Game.Game import Game
 from genetic_model import generate_population, over_population
-
-def training(**kargs):
-    model = kargs['model']
-    x = np.atleast_2d(np.array(kargs['obstacle']))
-    prediction =  model.predict(x)
-    if prediction >= 0.5:
-        return 1
-    return 0
 
 if(__name__=='__main__'):
     game = Game()
