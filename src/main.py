@@ -1,18 +1,19 @@
 import numpy as np
 from random import uniform
 #Local imports, Game, usada para puntuar modelos de nn y genetic_model con el modelo genetico en si
-from class_Game.class_Game import Game
+from Game.Game import Game
 from genetic_model import generate_population, over_population
-@Game()
-def training(*args):
-    model = args[0]
-    x = np.atleast_2d(np.array(args[1]))
+
+def training(**kargs):
+    model = kargs['model']
+    x = np.atleast_2d(np.array(kargs['obstacle']))
     prediction =  model.predict(x)
     if prediction >= 0.5:
         return 1
     return 0
 
 if(__name__=='__main__'):
+    game = Game()
     min_score = 30
     generations = 100
     gens_to_mutate = 2
@@ -25,9 +26,7 @@ if(__name__=='__main__'):
     for _ in range(generations):
         if _%10 == 0:
             render = True
-        for p in population:
-            p[0] = training(p[1],render)
-            render = False
+        game.play(population)
         population = sorted(population,key = lambda x:x[0],reverse=True)
         print(population[0][0])
         if(population[0][0] > min_score):
