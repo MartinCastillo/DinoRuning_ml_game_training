@@ -18,12 +18,12 @@ def create_model(n_inputs):
 def generate_population(size,n_inputs):
     p = []
     for _ in range(size):
-        p.append(create_model(n_inputs))
+        p.append([create_model(n_inputs),None])
     return p
 
 def model_crossover(parent1,parent2,gens_to_swap):
-    model1 = parent1[1]
-    model2 = parent2[1]
+    model1 = parent1[0]
+    model2 = parent2[0]
     weight1 = model1.get_weights()
     weight2 = model2.get_weights()
     new_weight1=weight1
@@ -34,20 +34,20 @@ def model_crossover(parent1,parent2,gens_to_swap):
         new_weight2[gen] = weight1[gen]
     model1.set_weights(new_weight1)
     model2.set_weights(new_weight2)
-    parent1[1] = model1
-    parent1[1] = model2
+    parent1[0] = model1
+    parent1[0] = model2
     return parent1,parent2
 
 def model_mutate(individual,mutate_probability,gens_to_mutate):
     modified = 0
-    model = individual[1]
+    model = individual[0]
     weights = model.get_weights()
     for i in range(len(weights)-1):
         if (uniform(0,1)<mutate_probability) and gens_to_mutate:
             weights[i] = weights[i]*uniform(0,2)
             modified += 1
     model.set_weights(weights)
-    individual[1] = model
+    individual[0] = model
     return individual
 
 def over_population(population,individuals_to_crossover,gens_to_swap,gens_to_mutate,mutate_probability):

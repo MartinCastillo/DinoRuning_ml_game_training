@@ -15,7 +15,7 @@ class Game:
         self.agent_shape = kargs.get("agent_shape",(70,70))
         #Each self.cycles_betwen_obstacle_spawn there is a random probability to spawn an obstacle
         self.cycles_betwen_obstacle_spawn = kargs.get("cycles_betwen_obstacle_spawn",25)
-        self.obstacle_spaw_probability = kargs.get("obstacle_spaw_probability",0.5)
+        self.obstacle_spaw_probability = kargs.get("obstacle_spaw_probability",0.7)
         self.obstacle_width_max = kargs.get("obstacle_width_max",20)
         self.obstacle_heigth_max = kargs.get("obstacle_heigth_max",70)
         self.obstacle_width_variation = kargs.get("obstacle_width_variation",10)
@@ -48,8 +48,8 @@ class Game:
                 elif coords[0] > self.character_x_position:
                     active_obstacles.append(o)
             #Actualizar score
-            if(self._last_len_obstacles>len(active_obstacles)):
-                self._global_score+=1
+            if self._last_len_obstacles > len(active_obstacles):
+                self._global_score += 1
             self._last_len_obstacles = len(active_obstacles)
         #añade obstaculos con pribabilidad aleatoria
         if (uniform(0,1)<=self.obstacle_spaw_probability)and(self._run_counter%self.cycles_betwen_obstacle_spawn==0):
@@ -95,9 +95,9 @@ class Game:
         obstacle = obstacle.get_rect()
         width = self.window_size[0]
         x_distance = obstacle[0] - self.character_x_position
-        x_distance //= width
+        x_distance /= width
         shape = obstacle[-2:]
-        shape = [shape[0]//width,shape[1]//width]
+        shape = [shape[0]/width,shape[1]/width]
         return np.atleast_2d(np.array([x_distance,*shape]))
 
     def play(self,models,render = True,controllable = False):
@@ -121,11 +121,7 @@ class Game:
                 agent = agent_model[0]
                 model = agent_model[1]
                 agent.update_agent(active_obstacles,self._run_counter)
-                #Controllable
-                if(render)and(controllable):
-                    if(pygame.key.get_pressed()[pygame.K_UP]):
-                        agent.jump()
-                if (len(active_obstacles)>0) and (agent.is_alive):
+                if (len(active_obstacles)>0) and (agent.is_alive()):
                     #Evalua predicción
                     norm_obstacle = self.normalize_obtacle(active_obstacles[0])
                     prediction = model.predict(norm_obstacle)
@@ -133,12 +129,14 @@ class Game:
                         agent.jump()
                     #Si está vivo actualiza score al global
                     agents_models_score[ax][2] = self._global_score
+            #Selecciona solo agentes vivos
+            active_agents = []
+            for a in agents_models_score:
+                agent = a[0]
+                if(agent.is_alive()):
+                    active_agents.append(agent)
             if(render):
-                #Selecciona solo agentes vivos para renderizar
-                active_agents = []
-                for a in agents_models_score:
-                    agent = a[0]
-                    if(agent.is_alive()):
-                        active_agents.append(agent)
                 self.render_game(window,active_agents,obstacles,self._global_score)
+            if(len(active_agents)==0):
+                break
         return [models_score[1:] for models_score in agents_models_score]
