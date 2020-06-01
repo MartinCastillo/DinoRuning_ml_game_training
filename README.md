@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 # DinoRuning-ml-game-training
 A simple game similar to Google's dinosaur, programmed in Python, the plan for this project is to train a machine learning model that has to learn to play, with a genetic model<br>
+=======
+# Dinosaur-IA-training
+A simple game similar to Google's dinosaur, programmed in Python, the plan for this project is to train a machine learning model that has to learn to play, with a genetic model
+>>>>>>> 8ede232f240e9e64ac1df6bcfef61362bb8950fe
 
 # Src
 * | ```/main.py ```: Is the main file, it makes the learning process, using functions from ```/genetic_model.py ```.<br>
