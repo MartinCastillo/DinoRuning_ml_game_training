@@ -4,6 +4,7 @@ import numpy as np
 from random import uniform,randint
 from Game.Agent.Agent import Agent
 from Game.Obstacle.Obstacle import Obstacle
+pygame.init()
 
 class Game:
     def __init__(self,**kargs):

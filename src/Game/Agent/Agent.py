@@ -17,13 +17,13 @@ class Agent:
         for sx,sprite in enumerate(self.sprites):
             self.sprites[sx] = pygame.transform.scale(sprite,self.shape)
             self.sprites[sx].set_colorkey((255,255,255))
-            self.sprites[sx].convert_alpha()
         self.sprite_animation_conunter = 0
         self.sprite_number = 3
         self.sprite_speed = 2
 
     def render(self,window):
-        window.blit(self.sprites[self.sprite_animation_conunter],self.get_rect())
+        sprite = self.sprites[self.sprite_animation_conunter].convert_alpha()
+        window.blit(sprite,self.get_rect())
 
     def get_rect(self):
         return pygame.Rect(*self.coords,*self.shape)
