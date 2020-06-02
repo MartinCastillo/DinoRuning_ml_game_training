@@ -4,17 +4,18 @@ from genetic_model import generate_population, over_population
 
 if(__name__=='__main__'):
     game = Game()
+    nn_inputs = 4
     min_score = 20
     generations = 100
     gens_to_mutate = 2
-    population_size = 100
+    population_size = 1
     gens_to_swap = 3
     mutate_probability = 0.01
     individuals_to_crossover = 100*0.2
-    population = generate_population(population_size,3)
+    population = generate_population(population_size,nn_inputs)
     for _ in range(generations):
         try:
-            render = False
+            render = True
             if _%10 == 0:
                 render = True
             print(_)

@@ -17,4 +17,3 @@ class Obstacle:
 
     def render(self,window):
         window.blit(pygame.transform.scale(self.sprite,self.shape),self.get_rect())
-        #pygame.draw.rect(window,(255,255,255),self.get_rect())
