@@ -12,4 +12,4 @@ Idea: https://www.youtube.com/watch?v=sB_IGstiWlc
   * | -> ```/assets ```: Game sprites and backgrounds.<br>
 * | ```/genetic_model.py ```: Contains functions to manage the population of the genetic model in ```/main.py ```, ```genetic_model.over_population()``` iterates over the nn models to corssover and mutate them.<br>
 
-![img](https://github.com/MartinCastillo/Dinosaur_runing_ml_gym/blob/master/Captures/1.PNG)
+![img](https://github.com/MartinCastillo/Dinosaur_runing_ml_gym/blob/master/Captures/5.PNG)
